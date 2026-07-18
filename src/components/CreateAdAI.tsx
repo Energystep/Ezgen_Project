@@ -80,11 +80,67 @@ const SAMPLE_PRODUCTS = [
   }
 ];
 
+const STOCK_VIDEOS = [
+  {
+    id: 'v1',
+    name: '🍵 มัทฉะพรีเมียม (Matcha Drip)',
+    details: 'ชาเขียวมัทฉะเกียวโตพรีเมียม ชงสดร้อนๆ ควันกรุ่น หอมละมุนใจ',
+    url: 'https://assets.mixkit.co/videos/preview/mixkit-pouring-hot-tea-into-a-cup-43187-large.mp4',
+    theme: 'emerald',
+    headline: 'มัทฉะพรีเมียมเกียวโต',
+    tagline: 'สัมผัสควันอุ่นหอมละมุน',
+    footerText: 'ผ่อนคลายลึกซึ้งด้วยชาออร์แกนิกแท้ 100%',
+    price: '350.-',
+    unit: 'ถ้วย',
+    points: ['อร่อย', 'ปลอดสาร', 'ทำสดใหม่', 'ราคาคุ้มค่า']
+  },
+  {
+    id: 'v2',
+    name: '☕ กาแฟดริปยามเช้า (Fresh Drip Coffee)',
+    details: 'กาแฟดริปอุ่นๆ เทจากเหยือกแก้ว หอมกลิ่นเมล็ดกาแฟแท้คั่วบดละเอียด',
+    url: 'https://assets.mixkit.co/videos/preview/mixkit-pouring-hot-coffee-into-a-cup-43034-large.mp4',
+    theme: 'amber',
+    headline: 'สุนทรียรสแห่งกาแฟดริป',
+    tagline: 'คั่วบดสดใหม่ทุกแก้ว',
+    footerText: 'คัดสรรจากยอดดอยออร์แกนิก ปรุงแต่งด้วยความใส่ใจ',
+    price: '89.-',
+    unit: 'แก้ว',
+    points: ['อร่อย', 'ทำสดใหม่', 'วัตถุดิบธรรมชาติ', 'ราคาคุ้มค่า']
+  },
+  {
+    id: 'v3',
+    name: '✨ อณูทองหรูหรา (Elegant Gold Dust)',
+    details: 'ละอองประกายทองคำพรีเมียมล่องลอยสะกดสายตา โดดเด่นเป็นพิเศษ',
+    url: 'https://assets.mixkit.co/videos/preview/mixkit-golden-dust-particles-moving-slowly-31518-large.mp4',
+    theme: 'slate',
+    headline: 'สกินแคร์ทองคำระดับลักชัวรี่',
+    tagline: 'ฟื้นฟูผิวอณูลึกซึ้ง',
+    footerText: 'ให้ผิวของคุณเปล่งประกายเจิดจรัสยิ่งกว่าใคร!',
+    price: '1,290.-',
+    unit: 'ขวด',
+    points: ['ปลอดสาร', 'ทำจากวัตถุดิบธรรมชาติ', 'เก็บได้นาน']
+  },
+  {
+    id: 'v4',
+    name: '🥤 ชานมไข่มุกสดชื่น (Boba Milk Tea)',
+    details: 'ชานมไข่มุกไต้หวันแท้ เทสดใหม่ เคี้ยวหนึบ เต็มอิ่มในทุกคำ',
+    url: 'https://assets.mixkit.co/videos/preview/mixkit-pouring-boba-milk-tea-into-a-cup-43405-large.mp4',
+    theme: 'rose',
+    headline: 'ชานมไต้หวันบราวน์ชูการ์',
+    tagline: 'เคี้ยวหนึบฟินสะกดใจ',
+    footerText: 'อร่อยเข้มข้น นมสดแท้ผสมน้ำเชื่อมสูตรพิเศษ!',
+    price: '45.-',
+    unit: 'แก้ว',
+    points: ['อร่อย', 'ทำสดใหม่', 'ราคาคุ้มค่า']
+  }
+];
+
 export default function CreateAdAI({ projects, setProjects, setCurrentPage, setSelectedProject }: CreateAdAIProps) {
   // Active product input states
   const [productName, setProductName] = useState(SAMPLE_PRODUCTS[0].name);
   const [productDetails, setProductDetails] = useState(SAMPLE_PRODUCTS[0].details);
   const [uploadedImage, setUploadedImage] = useState<string | null>(SAMPLE_PRODUCTS[0].image);
+  const [mediaType, setMediaType] = useState<'image' | 'video'>('image');
   
   // Custom states for the interactive template canvas
   const [headline, setHeadline] = useState(SAMPLE_PRODUCTS[0].headline);
@@ -135,6 +191,7 @@ export default function CreateAdAI({ projects, setProjects, setCurrentPage, setS
     setProductName(sample.name);
     setProductDetails(sample.details);
     setUploadedImage(sample.image);
+    setMediaType('image');
     setSelectedPoints(sample.points);
     setHeadline(sample.headline);
     setTagline(sample.tagline);
@@ -144,19 +201,36 @@ export default function CreateAdAI({ projects, setProjects, setCurrentPage, setS
     setActiveTheme(sample.theme as any);
   };
 
+  // Swap sample videos
+  const handleSelectVideo = (video: typeof STOCK_VIDEOS[0]) => {
+    setProductName(video.name);
+    setProductDetails(video.details);
+    setUploadedImage(video.url);
+    setMediaType('video');
+    setSelectedPoints(video.points);
+    setHeadline(video.headline);
+    setTagline(video.tagline);
+    setFooterText(video.footerText);
+    setPriceText(video.price);
+    setUnitText(video.unit);
+    setActiveTheme(video.theme as any);
+  };
+
   const handlePointToggle = (point: string) => {
     setSelectedPoints(prev => 
       prev.includes(point) ? prev.filter(p => p !== point) : [...prev, point]
     );
   };
 
-  // Image Upload handler
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // Media Upload handler
+  const handleMediaUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      const isVideo = file.type.startsWith('video/');
       const reader = new FileReader();
       reader.onloadend = () => {
         setUploadedImage(reader.result as string);
+        setMediaType(isVideo ? 'video' : 'image');
       };
       reader.readAsDataURL(file);
     }
@@ -171,9 +245,11 @@ export default function CreateAdAI({ projects, setProjects, setCurrentPage, setS
     e.preventDefault();
     const file = e.dataTransfer.files?.[0];
     if (file) {
+      const isVideo = file.type.startsWith('video/');
       const reader = new FileReader();
       reader.onloadend = () => {
         setUploadedImage(reader.result as string);
+        setMediaType(isVideo ? 'video' : 'image');
       };
       reader.readAsDataURL(file);
     }
@@ -271,7 +347,10 @@ ${bulletsStr}
 
   // Mock download trigger
   const handleDownloadImage = () => {
-    alert('🎨 กำลังส่งออกรูปภาพดีไซน์ความละเอียดสูงระดับ HD... ระบบประมวลผลเลเยอร์และเซฟไฟล์ลงในเครื่องของคุณสำเร็จเรียบร้อย!');
+    alert(mediaType === 'video' 
+      ? '🎬 กำลังส่งออกไฟล์วิดีโอโฆษณาเคลื่อนไหวระดับ Full HD (MP4/WebM)... ระบบประมวลผลวิดีโอและเซฟไฟล์ลงในเครื่องของคุณสำเร็จเรียบร้อย!'
+      : '🎨 กำลังส่งออกรูปภาพดีไซน์ความละเอียดสูงระดับ HD... ระบบประมวลผลเลเยอร์และเซฟไฟล์ลงในเครื่องของคุณสำเร็จเรียบร้อย!'
+    );
   };
 
   // Get CSS classes based on active theme
@@ -322,22 +401,42 @@ ${bulletsStr}
   return (
     <div className="space-y-6 font-sans">
       
-      {/* Sample products shortcut bar */}
-      <div className="flex flex-wrap items-center gap-3 bg-white p-3 rounded-2xl border border-gray-100 shadow-xs">
-        <span className="text-xs font-bold text-gray-400 flex items-center shrink-0">
-          <Grid className="w-4 h-4 mr-1 text-indigo-500" />
-          คลิกเลือกแบรนด์ตัวอย่าง เพื่อทดสอบความสะดวกแบบรวดเร็ว:
-        </span>
-        <div className="flex flex-wrap gap-2">
-          {SAMPLE_PRODUCTS.map((sample) => (
-            <button
-              key={sample.id}
-              onClick={() => handleSelectSample(sample)}
-              className="text-xs bg-gray-50 hover:bg-indigo-50 hover:text-indigo-600 hover:border-indigo-200 border border-gray-200 px-3 py-1.5 rounded-xl transition-all font-medium flex items-center space-x-1"
-            >
-              <span>{sample.name.split(' ')[0]}</span>
-            </button>
-          ))}
+      {/* Sample products & videos shortcut bar */}
+      <div className="bg-white p-4 rounded-3xl border border-gray-100 shadow-xs space-y-3">
+        <div className="flex flex-wrap items-center gap-3">
+          <span className="text-xs font-bold text-gray-500 flex items-center shrink-0">
+            <Grid className="w-4 h-4 mr-1.5 text-indigo-500" />
+            แบรนด์ภาพนิ่งตัวอย่าง:
+          </span>
+          <div className="flex flex-wrap gap-2">
+            {SAMPLE_PRODUCTS.map((sample) => (
+              <button
+                key={sample.id}
+                onClick={() => handleSelectSample(sample)}
+                className="text-xs bg-gray-50 hover:bg-indigo-50 hover:text-indigo-600 hover:border-indigo-200 border border-gray-200 px-3 py-1.5 rounded-xl transition-all font-medium flex items-center space-x-1"
+              >
+                <span>{sample.name.split(' ')[0]}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-3 pt-3 border-t border-gray-50">
+          <span className="text-xs font-bold text-gray-500 flex items-center shrink-0">
+            <span className="text-sm mr-1.5">🎬</span>
+            หรือทดลอง โฆษณาวิดีโอเคลื่อนไหว (Premium Video Loops):
+          </span>
+          <div className="flex flex-wrap gap-2">
+            {STOCK_VIDEOS.map((video) => (
+              <button
+                key={video.id}
+                onClick={() => handleSelectVideo(video)}
+                className="text-xs bg-indigo-50/50 hover:bg-indigo-100/70 hover:text-indigo-700 hover:border-indigo-300 border border-indigo-100 px-3 py-1.5 rounded-xl transition-all font-semibold text-indigo-800 flex items-center space-x-1"
+              >
+                <span>{video.name.split(' ')[0]}</span>
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
@@ -386,18 +485,33 @@ ${bulletsStr}
             {/* Upload Area */}
             <div>
               <label className="block text-xs font-bold text-gray-500 mb-1.5 uppercase tracking-wide">
-                อัปโหลดรูปภาพสินค้า <span className="text-gray-400 font-normal">(ก่อนสร้าง)</span>
+                อัปโหลดรูปภาพหรือวิดีโอสินค้า <span className="text-gray-400 font-normal">(ก่อนสร้าง)</span>
               </label>
               
               <div className="grid grid-cols-2 gap-3">
                 {uploadedImage && (
-                  <div className="relative aspect-square rounded-2xl overflow-hidden border border-gray-100 bg-gray-50">
-                    <img 
-                      src={uploadedImage} 
-                      alt="Original product" 
-                      className="w-full h-full object-cover"
-                      referrerPolicy="no-referrer"
-                    />
+                  <div className="relative aspect-square rounded-2xl overflow-hidden border border-gray-100 bg-gray-50 group">
+                    {mediaType === 'video' ? (
+                      <video 
+                        src={uploadedImage} 
+                        className="w-full h-full object-cover"
+                        autoPlay
+                        loop
+                        muted
+                        playsInline
+                      />
+                    ) : (
+                      <img 
+                        src={uploadedImage} 
+                        alt="Original product" 
+                        className="w-full h-full object-cover"
+                        referrerPolicy="no-referrer"
+                      />
+                    )}
+                    {/* Media Type badge */}
+                    <div className="absolute bottom-1.5 left-1.5 bg-black/70 text-white text-[8px] font-bold px-1.5 py-0.5 rounded-md uppercase tracking-wider">
+                      {mediaType === 'video' ? '🎬 VIDEO' : '🖼️ IMAGE'}
+                    </div>
                     <button
                       onClick={() => setUploadedImage(null)}
                       className="absolute top-1.5 right-1.5 bg-black/60 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs hover:bg-black transition-all"
@@ -416,13 +530,13 @@ ${bulletsStr}
                   }`}
                 >
                   <Upload className="w-5 h-5 text-gray-400 mb-1" />
-                  <span className="text-[10px] font-bold text-indigo-600 block">คลิกหรือลากไฟล์ภาพสินค้า</span>
-                  <span className="text-[9px] text-gray-400 block mt-0.5">รองรับ JPG, PNG (สูงสุด 10MB)</span>
+                  <span className="text-[10px] font-bold text-indigo-600 block">คลิกหรือลากไฟล์ภาพ/วิดีโอ</span>
+                  <span className="text-[9px] text-gray-400 block mt-0.5">รองรับ JPG, PNG, MP4, WEBM (สูงสุด 20MB)</span>
                   <input
                     type="file"
                     ref={fileInputRef}
-                    onChange={handleImageUpload}
-                    accept="image/*"
+                    onChange={handleMediaUpload}
+                    accept="image/*,video/*"
                     className="hidden"
                   />
                 </div>
@@ -631,22 +745,33 @@ ${bulletsStr}
             
             {/* Before */}
             <div className="md:col-span-5 space-y-1">
-              <span className="text-[10px] text-gray-400 font-bold block text-center">ก่อนสร้าง (รูปสินค้าเดิม)</span>
+              <span className="text-[10px] text-gray-400 font-bold block text-center">ก่อนสร้าง ({mediaType === 'video' ? 'วิดีโอต้นฉบับ' : 'รูปสินค้าเดิม'})</span>
               <div className="aspect-[4/3] rounded-2xl border border-gray-100 bg-slate-50 overflow-hidden relative">
                 {uploadedImage ? (
-                  <img 
-                    src={uploadedImage} 
-                    alt="Original" 
-                    className="w-full h-full object-cover grayscale opacity-80"
-                    referrerPolicy="no-referrer"
-                  />
+                  mediaType === 'video' ? (
+                    <video 
+                      src={uploadedImage} 
+                      className="w-full h-full object-cover"
+                      autoPlay
+                      loop
+                      muted
+                      playsInline
+                    />
+                  ) : (
+                    <img 
+                      src={uploadedImage} 
+                      alt="Original" 
+                      className="w-full h-full object-cover grayscale opacity-80"
+                      referrerPolicy="no-referrer"
+                    />
+                  )
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-xs text-gray-400">
-                    ไม่มีรูปภาพ
+                    ไม่มีรูปภาพหรือวิดีโอ
                   </div>
                 )}
                 <div className="absolute top-2 left-2 bg-slate-900/70 text-slate-200 text-[8px] font-bold px-2 py-0.5 rounded-full uppercase tracking-widest">
-                  Original Image
+                  {mediaType === 'video' ? 'Original Video' : 'Original Image'}
                 </div>
               </div>
             </div>
@@ -686,19 +811,30 @@ ${bulletsStr}
                   {/* Photo with beautiful ring border */}
                   <div className="w-20 h-20 rounded-2xl border-2 border-white/20 shadow-md overflow-hidden bg-white/10 shrink-0 relative">
                     {uploadedImage ? (
-                      <img 
-                        src={uploadedImage} 
-                        alt="Product visual" 
-                        className="w-full h-full object-cover scale-110 hover:scale-125 transition-all duration-300"
-                        referrerPolicy="no-referrer"
-                      />
+                      mediaType === 'video' ? (
+                        <video 
+                          src={uploadedImage} 
+                          className="w-full h-full object-cover scale-110 hover:scale-125 transition-all duration-300"
+                          autoPlay
+                          loop
+                          muted
+                          playsInline
+                        />
+                      ) : (
+                        <img 
+                          src={uploadedImage} 
+                          alt="Product visual" 
+                          className="w-full h-full object-cover scale-110 hover:scale-125 transition-all duration-300"
+                          referrerPolicy="no-referrer"
+                        />
+                      )
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-[10px] text-white/50">
                         🛍️
                       </div>
                     )}
                     <div className={`absolute bottom-0 inset-x-0 h-4 ${themeConfig.accentColor}/80 text-[8px] text-center font-bold flex items-center justify-center`}>
-                      อร่อยชัวร์
+                      {mediaType === 'video' ? 'วิดีโอโปรด' : 'อร่อยชัวร์'}
                     </div>
                   </div>
 

@@ -26,6 +26,7 @@ import TemplateLibrary from './components/TemplateLibrary';
 import Pricing from './components/Pricing';
 import Blog from './components/Blog';
 import CostStructure from './components/CostStructure';
+import PromptChatbot from './components/PromptChatbot';
 import { Page, Project, AdTemplate } from './types';
 
 export default function App() {
@@ -116,6 +117,7 @@ export default function App() {
   const sidebarItems = [
     { id: 'home', label: 'หน้าหลัก', icon: HomeIcon },
     { id: 'editor', label: 'สร้างสื่อด้วย AI', icon: Sparkles },
+    { id: 'chatbot', label: 'แชทบอทคิดพร้อมท์', icon: HelpCircle },
     { id: 'dashboard', label: 'จัดการโพสต์ & แดชบอร์ด', icon: Layers },
     { id: 'templates', label: 'ประวัติผลงาน', icon: Grid },
     { id: 'products', label: 'สินค้าของฉัน', icon: Package },
@@ -298,6 +300,10 @@ export default function App() {
       case 'settings':
         return (
           <Settings setCurrentPage={setCurrentPage} />
+        );
+      case 'chatbot':
+        return (
+          <PromptChatbot setCurrentPage={setCurrentPage} />
         );
       case 'pricing':
       case 'cost':

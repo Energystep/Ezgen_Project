@@ -1,4 +1,4 @@
-export type Page = 'home' | 'dashboard' | 'templates' | 'editor' | 'analytics' | 'pricing' | 'blog' | 'cost';
+export type Page = 'home' | 'dashboard' | 'templates' | 'editor' | 'analytics' | 'pricing' | 'blog' | 'cost' | 'chatbot';
 
 export interface AdElement {
   id: string;
