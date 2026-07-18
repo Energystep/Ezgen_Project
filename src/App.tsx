@@ -27,9 +27,11 @@ import Pricing from './components/Pricing';
 import Blog from './components/Blog';
 import CostStructure from './components/CostStructure';
 import PromptChatbot from './components/PromptChatbot';
+import SplashScreen from './components/SplashScreen';
 import { Page, Project, AdTemplate } from './types';
 
 export default function App() {
+  const [showSplash, setShowSplash] = useState<boolean>(true);
   const [currentPage, setCurrentPage] = useState<Page>('editor'); // Default to AI Creator like in the user's uploaded image!
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
 
@@ -318,6 +320,10 @@ export default function App() {
         return renderHomeDashboard();
     }
   };
+
+  if (showSplash) {
+    return <SplashScreen onDismiss={() => setShowSplash(false)} />;
+  }
 
   return (
     <div className="flex min-h-screen bg-[#EBF1F6] text-gray-800 selection:bg-indigo-600 selection:text-white font-sans" id="applet-viewport-root">
